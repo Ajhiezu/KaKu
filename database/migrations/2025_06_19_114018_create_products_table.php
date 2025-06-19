@@ -13,13 +13,15 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('barcode')->nullable();
+            $table->string('image');
+            $table->string('barcode');
             $table->string('name');
-            $table->enum('unit',['pcs','liter','kg']);
-            $table->integer('harga_beli');
-            $table->integer('harga_jual');
+            $table->enum('unit', ['kg','pcs','liter']);
             $table->integer('stock');
-            $table->string('category');
+            $table->decimal('purchase_price',10,2)->default(0);
+            $table->decimal('selling_price',10,2)->default(0);
+            $table->foreignId('category_id')->nullable()->constrained()->onDelete('cascade');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

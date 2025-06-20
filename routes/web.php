@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 //Login
@@ -9,10 +11,12 @@ Route::post('/login',[AdminController::class,'login']);
 Route::post('/logout',[AdminController::class,'logout'])->name('logout');
 
 
-Route::get('/dashboard',function (){
+Route::get('/',function (){
     return view('dashboard');
-})->middleware('auth');
+})->middleware('auth')->name('dashboard');
 
+// Product
+Route::resource('products',ProductController::class);
 
-
-//Product
+// Category
+Route::resource('categories',CategoryController::class);

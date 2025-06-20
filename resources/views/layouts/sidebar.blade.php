@@ -11,17 +11,35 @@
     </li><!-- End Dashboard Nav -->
 
     <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#categories-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-menu-button-wide"></i><span>Categories</span><i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="categories-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="{{ route('categories.index') }}">
+            <i class="bi bi-circle"></i><span>Categories</span>
+          </a>
+        </li>
+        <li>
+          <a href="{{ route('categories.create') }}">
+            <i class="bi bi-circle"></i><span>Add Categories</span>
+          </a>
+        </li>
+      </ul>
+    </li><!-- End Products Nav -->
+
+    <li class="nav-item">
       <a class="nav-link collapsed" data-bs-target="#products-nav" data-bs-toggle="collapse" href="#">
         <i class="bi bi-menu-button-wide"></i><span>Products</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="products-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
         <li>
-          <a href="#">
+          <a href="{{ route('products.index') }}">
             <i class="bi bi-circle"></i><span>Product</span>
           </a>
         </li>
         <li>
-          <a href="#">
+          <a href="{{ route('products.create') }}">
             <i class="bi bi-circle"></i><span>Add Product</span>
           </a>
         </li>

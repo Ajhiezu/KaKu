@@ -27,6 +27,8 @@
     <!-- Template Main CSS File -->
     <link href="{{ asset('admin') }}/assets/css/style.css" rel="stylesheet">
 
+    @stack('styles') 
+
     <!-- =======================================================
     * Template Name: NiceAdmin
     * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
@@ -71,5 +73,8 @@
 
     <!-- Template Main JS File -->
     <script src="{{ asset('admin') }}/assets/js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @stack('scripts')
 </body>
 </html>

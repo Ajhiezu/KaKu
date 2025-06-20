@@ -15,7 +15,9 @@
 
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet">
 
   <!-- Vendor CSS Files -->
   <link href="{{ asset('admin') }}/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -64,14 +66,22 @@
                     <p class="text-center small">Enter your username & password to login</p>
                   </div>
 
+                  @if ($errors->has('name'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-1"></i>
+            {{ $errors->first('name') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          @endif
+
                   <form class="row g-3 needs-validation" method="POST" action="{{ route('login') }}">
                     @csrf
 
                     <div class="col-12">
-                      <label for="yourUsername" class="form-label">Username</label>
+                      <label for="name" class="form-label">Username</label>
                       <div class="input-group has-validation">
                         <span class="input-group-text" id="inputGroupPrepend">@</span>
-                        <input type="text" name="name" class="form-control" id="yourUsername" required>
+                        <input type="text" name="name" class="form-control" id="name" required>
                         <div class="invalid-feedback">Please enter your username.</div>
                       </div>
                     </div>
@@ -113,7 +123,8 @@
     </div>
   </main><!-- End #main -->
 
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+      class="bi bi-arrow-up-short"></i></a>
 
   <!-- Vendor JS Files -->
   <script src="{{ asset('admin') }}/assets/vendor/apexcharts/apexcharts.min.js"></script>
@@ -127,6 +138,19 @@
 
   <!-- Template Main JS File -->
   <script src="{{ asset('admin') }}/assets/js/main.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const alert = document.querySelector('.alert');
+    if (alert) {
+      setTimeout(() => {
+        alert.classList.remove('show');
+        alert.classList.add('fade');
+        setTimeout(() => alert.remove(), 500); // remove after fade
+      }, 5000);
+    }
+  });
+</script>
+  @stack('scripts')
 
 </body>
 

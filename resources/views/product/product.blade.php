@@ -42,26 +42,35 @@
           </thead>
           <tbody>
           @foreach ($products as $index => $product)
-        <tr>
-        <th scope="row">{{ $index + 1 }}</th>
-        <img src="{{ asset($product['image']) }}" alt="Gambar Produk" width="100">
-        <td>{{ $product['barcode'] }}</td>
-        <td>{{ $product['name'] }}</td>
-        <td>{{ ucfirst($product['unit']) }}</td>
-        <td>{{ ucfirst($product['stock']) }}</td>
-        <td>Rp {{ number_format($product['purchase_price'], 0, ',', '.') }}</td>
-        <td>Rp {{ number_format($product['selling_price'], 0, ',', '.') }}</td>
-        <td>Category</td>
-        <td>
-        <a href="#" class="btn btn-warning"><i class="bi bi-pencil"></i></a>
-        <form action="#" method="POST" style="display:inline;">
-          @csrf
-          @method('DELETE')
-          <button type="submit" class="btn btn-danger"
-          onclick="return confirm('Hapus produk ini?')"><i class="bi bi-trash"></i></button>
-        </form>
-        </td>
-        </tr>
+          <tr>
+          <th scope="row">{{ $index + 1 }}</th>
+          <td>@if($product->image)
+        <img src="{{ asset('storage/' . $product->image) }}" alt="Gambar Produk" width="80"
+        onerror="this.onerror=null;this.src='{{ asset('no-image.png') }}';">
+        @else
+        <span class="text-muted">No image</span>
+        @endif
+          </td>
+          <td>{{ $product['barcode'] }}</td>
+          <td>{{ $product['name'] }}</td>
+          <td>{{ ucfirst($product['unit']) }}</td>
+          <td>{{ ucfirst($product['stock']) }}</td>
+          <td>Rp {{ number_format($product['purchase_price'], 0, ',', '.') }}</td>
+          <td>Rp {{ number_format($product['selling_price'], 0, ',', '.') }}</td>
+          <td>{{ $product->category->name ?? '-' }}</td>
+          <td>
+          <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning"><i
+            class="bi bi-pencil"></i></a>
+          <form id="delete-form-{{ $product->id }}" action="{{ route('products.destroy', $product->id) }}"
+            method="POST" style="display:none;">
+            @csrf
+            @method('DELETE')
+          </form>
+
+          <button onclick="deleteProduct({{ $product->id }})" class="btn btn-danger"><i
+            class="bi bi-trash"></i></button>
+          </td>
+          </tr>
       @endforeach
           </tbody>
         </table>
@@ -76,3 +85,36 @@
 
   </main><!-- End #main -->
 @endsection
+@push('scripts')
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  @if(session('success'))
+    <script>
+    Swal.fire({
+    icon: 'success',
+    title: 'Success!',
+    text: '{{ session('success') }}',
+    showConfirmButton: false,
+    timer: 2000
+    });
+    </script>
+  @endif
+
+  <script>
+    function deleteProduct(id) {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+      document.getElementById('delete-form-' + id).submit();
+      }
+    })
+    }
+  </script>
+@endpush

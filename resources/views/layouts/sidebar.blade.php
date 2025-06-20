@@ -4,7 +4,7 @@
   <ul class="sidebar-nav" id="sidebar-nav">
 
     <li class="nav-item">
-      <a class="nav-link " href="index.html">
+      <a class="nav-link collapsed" href="index.html">
         <i class="bi bi-grid"></i>
         <span>Dashboard</span>
       </a>
@@ -12,7 +12,7 @@
 
     <li class="nav-item">
       <a class="nav-link collapsed" data-bs-target="#categories-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-menu-button-wide"></i><span>Categories</span><i class="bi bi-chevron-down ms-auto"></i>
+        <i class="bi bi-layers"></i><span>Categories</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="categories-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
         <li>
@@ -30,7 +30,7 @@
 
     <li class="nav-item">
       <a class="nav-link collapsed" data-bs-target="#products-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-menu-button-wide"></i><span>Products</span><i class="bi bi-chevron-down ms-auto"></i>
+        <i class="bi bi-box"></i><span>Products</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="products-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
         <li>
@@ -48,7 +48,7 @@
 
     <li class="nav-item">
       <a class="nav-link collapsed" data-bs-target="#customer-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-journal-text"></i><span>Customers</span><i class="bi bi-chevron-down ms-auto"></i>
+        <i class="bi bi-cash"></i><span>Customers</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="customer-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
         <li>
@@ -66,7 +66,7 @@
 
     <li class="nav-item">
       <a class="nav-link collapsed" data-bs-target="#user-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-layout-text-window-reverse"></i><span>Users</span><i class="bi bi-chevron-down ms-auto"></i>
+        <i class="bi bi-people"></i><span>Users</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="user-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
         <li>
@@ -86,7 +86,7 @@
 
     <li class="nav-item">
       <a class="nav-link collapsed" data-bs-target="#transaction-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-menu-button-wide"></i><span>Transaction</span><i class="bi bi-chevron-down ms-auto"></i>
+        <i class="bi bi-cart"></i><span>Transaction</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="transaction-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
         <li>
@@ -104,7 +104,7 @@
 
     <li class="nav-item">
       <a class="nav-link collapsed" data-bs-target="#report-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-menu-button-wide"></i><span>Report</span><i class="bi bi-chevron-down ms-auto"></i>
+        <i class="bi bi-clipboard"></i><span>Report</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="report-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
         <li>

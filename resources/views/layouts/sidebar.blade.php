@@ -70,12 +70,12 @@
       </a>
       <ul id="user-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
         <li>
-          <a href="#">
+          <a href="{{ route('users.index') }}">
             <i class="bi bi-circle"></i><span>User</span>
           </a>
         </li>
         <li>
-          <a href="#">
+          <a href="{{ route('users.create') }}">
             <i class="bi bi-circle"></i><span>Add User</span>
           </a>
         </li>

@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 //Login
@@ -24,3 +25,6 @@ Route::resource('categories',CategoryController::class);
 
 // Customer
 Route::resource('customers',CustomerController::class);
+
+// User
+Route::resource('users',UserController::class);

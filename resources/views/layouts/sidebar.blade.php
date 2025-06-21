@@ -4,7 +4,7 @@
   <ul class="sidebar-nav" id="sidebar-nav">
 
     <li class="nav-item">
-      <a class="nav-link collapsed" href="index.html">
+      <a class="nav-link collapsed" href="{{ route('dashboard') }}">
         <i class="bi bi-grid"></i>
         <span>Dashboard</span>
       </a>
@@ -52,12 +52,12 @@
       </a>
       <ul id="customer-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
         <li>
-          <a href="#">
+          <a href="{{ route('customers.index') }}">
             <i class="bi bi-circle"></i><span>Customer</span>
           </a>
         </li>
         <li>
-          <a href="#">
+          <a href="{{ route('customers.create') }}">
             <i class="bi bi-circle"></i><span>Add Customer</span>
           </a>
         </li>

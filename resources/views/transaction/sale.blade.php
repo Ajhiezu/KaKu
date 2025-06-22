@@ -62,7 +62,7 @@
                                             <label for="customer" class="form-label">Customer</label>
                                             <input type="text" id="customer" class="form-control" oninput="searchCustomer()"
                                                 autocomplete="off" name="customer">
-                                            <div id="customer-suggestions" class="dropdown-menu show"
+                                            <div id="customer-suggestions" class="dropdown-menu"
                                                 style="position: absolute; z-index: 1000;"></div>
                                         </div>
                                         <div class="text-center">
@@ -176,7 +176,11 @@
                                                         <input type="hidden" name="bayar" id="form-bayar">
                                                         <input type="hidden" name="kembalian" id="form-kembalian">
                                                         <input type="hidden" name="products" id="form-products">
-
+                                                        <div id="debt-info" style="display: none;"
+                                                            class="alert alert-warning mt-3">
+                                                            <strong>Hutang:</strong>
+                                                            <p>Total Hutang: <span id="debt-amount">Rp 0</span></p>
+                                                        </div>
                                                         <button type="submit" class="btn btn-success">Submit
                                                             Transaksi</button>
                                                     </form>
@@ -323,16 +327,16 @@
             row.setAttribute('data-barcode', barcode);
 
             row.innerHTML = `
-                <th scope="row">${rowCount}</th>
-                <td class="product-name">${name}</td>
-                <td class="qty">${qty}</td>
-                <td class="price">${price}</td>
-                <td class="subtotal">${subtotal}</td>
-                <td>
-                    <button class="btn btn-sm btn-warning me-1" onclick="editProduct(this)"><i class="bi bi-pencil"></i></button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteProduct(this)"><i class="bi bi-trash"></i></button>
-                </td>
-            `;
+                                            <th scope="row">${rowCount}</th>
+                                            <td class="product-name">${name}</td>
+                                            <td class="qty">${qty}</td>
+                                            <td class="price">${price}</td>
+                                            <td class="subtotal">${subtotal}</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-warning me-1" onclick="editProduct(this)"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-danger" onclick="deleteProduct(this)"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        `;
 
             hitungTotal();
 
@@ -428,7 +432,7 @@
             const keyword = document.getElementById("product-name").value;
             if (keyword.length < 1) return;
 
-            const res = await fetch(`/autocomplete/name?name=${keyword}`);
+            const res = await fetch(`/autocomplete/product?name=${keyword}`);
             const data = await res.json();
             createSuggestionList(data, "name-suggestions", false);
         }
@@ -445,7 +449,7 @@
             }
 
             try {
-                const res = await fetch(`/autocomplete/name?name=${encodeURIComponent(keyword)}`);
+                const res = await fetch(`/autocomplete/customer?name=${encodeURIComponent(keyword)}`);
                 if (!res.ok) throw new Error("Network response was not ok");
                 const data = await res.json();
 
@@ -509,12 +513,12 @@
                 const row = table.insertRow();
                 row.setAttribute('data-barcode', data.barcode);
                 row.innerHTML = `
-                                <th scope="row">${rowCount}</th>
-                                <td class="product-name">${data.name}</td>
-                                <td class="qty">${qty}</td>
-                                <td class="price">${data.selling_price}</td>
-                                <td class="subtotal">${subtotal}</td>
-                            `;
+                                                            <th scope="row">${rowCount}</th>
+                                                            <td class="product-name">${data.name}</td>
+                                                            <td class="qty">${qty}</td>
+                                                            <td class="price">${data.selling_price}</td>
+                                                            <td class="subtotal">${subtotal}</td>
+                                                        `;
 
                 hitungTotal();
                 document.getElementById("barcode").value = '';
@@ -564,26 +568,61 @@
     </script>
     <script>
         document.getElementById("sale-form").addEventListener("submit", function (e) {
-            // Ambil waktu dari input datetime yang tampil
+            e.preventDefault(); // cegah submit sementara
+
+            // Cek apakah ada produk di tabel
+            const productRows = document.querySelectorAll("#product-list tr");
+            if (productRows.length === 0) {
+                // Pakai SweetAlert2 (pastikan sudah include SweetAlert2) 
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Belum ada produk',
+                    text: 'Mohon tambahkan minimal 1 produk sebelum submit transaksi.',
+                    confirmButtonColor: '#3085d6',
+                });
+                return; // batalkan submit
+            }
+
+            // Jika ada produk, lanjut validasi dan submit seperti biasa
             const datetime = document.getElementById("datetime").value;
-            const customer = document.getElementById("customer").value;
+            const customer = document.getElementById("customer").value.trim();
             const totalStr = document.getElementById("total").value.replace(/[^\d]/g, '');
             const bayarStr = document.getElementById("bayar").value.replace(/[^\d]/g, '');
             const kembalianStr = document.getElementById("kembalian").value.replace(/[^\d]/g, '');
 
-            // Ambil data produk dari tabel
+            const total = parseFloat(totalStr || 0);
+            const bayar = parseFloat(bayarStr || 0);
+
+            if (bayar <= 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Pembayaran kosong!',
+                    text: 'Pembayaran harus diisi terlebih dahulu!',
+                });
+                return;
+            }
+
+            if (bayar < total && customer === '') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Customer kosong!',
+                    text: 'Customer harus diisi jika ingin menghutang!',
+                });
+                return;
+            }
+
+            // Siapkan data produk untuk disubmit
             const products = [];
-            document.querySelectorAll("#product-list tr").forEach(row => {
+            productRows.forEach(row => {
                 const name = row.querySelector(".product-name")?.textContent.trim();
                 const qty = parseInt(row.querySelector(".qty")?.textContent || 0);
                 const price = parseInt(row.querySelector(".price")?.textContent || 0);
                 const subtotal = parseInt(row.querySelector(".subtotal")?.textContent || 0);
                 if (name) {
-                    products.push({ name, qty, price, subtotal });
+                    products.push({ name, quantity: qty, price, subtotal });
                 }
             });
 
-            // Set ke hidden input
             document.getElementById("form-datetime").value = datetime;
             document.getElementById("form-customer").value = customer;
             document.getElementById("form-total").value = totalStr;
@@ -591,15 +630,39 @@
             document.getElementById("form-kembalian").value = kembalianStr;
             document.getElementById("form-products").value = JSON.stringify(products);
 
-            // Optional debug (hapus ini setelah oke)
-            console.log({
-                datetime,
-                customer,
-                totalStr,
-                bayarStr,
-                kembalianStr,
-                products
+            // Konfirmasi submit
+            Swal.fire({
+                title: 'Yakin ingin submit transaksi?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, simpan!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    e.target.submit(); // submit form asli
+                }
             });
         });
+
+    </script>
+    <script>
+        function updateDebtInfo() {
+            const total = parseInt(document.getElementById("total").value.replace(/[^\d]/g, '') || "0");
+            const bayar = parseInt(document.getElementById("bayar").value.replace(/[^\d]/g, '') || "0");
+            const debtAmount = total - bayar;
+
+            if (bayar < total) {
+                document.getElementById("debt-info").style.display = "block";
+                document.getElementById("debt-amount").innerText = new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR'
+                }).format(debtAmount);
+            } else {
+                document.getElementById("debt-info").style.display = "none";
+            }
+        }
+        document.getElementById("bayar").addEventListener("input", updateDebtInfo);
     </script>
 @endpush

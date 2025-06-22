@@ -43,16 +43,18 @@ Route::get('/autocomplete/barcode', function (\Illuminate\Http\Request $request)
 });
 
 // Untuk autocomplete by name
-Route::get('/autocomplete/name', function (\Illuminate\Http\Request $request) {
+Route::get('/autocomplete/product', function (\Illuminate\Http\Request $request) {
     $results = \App\Models\Product::where('name', 'like', '%' . $request->name . '%')
         ->limit(10)
         ->get(['id', 'barcode', 'name', 'selling_price']);
 
     return response()->json($results);
 });
-Route::get('/autocomplete/name', function (\Illuminate\Http\Request $request) {
+Route::get('/autocomplete/customer', function (\Illuminate\Http\Request $request) {
     $results = \App\Models\Customer::where('name', 'like', '%' . $request->name . '%')
         ->limit(10)->get();
 
     return response()->json($results);
 });
+
+Route::post('/debt', [AdminController::class, 'debt'])->name('debts.store');

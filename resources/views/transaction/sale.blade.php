@@ -106,7 +106,8 @@
 
                                                         <div class="manual-only col-12">
                                                             <label for="price" class="form-label">Price</label>
-                                                            <input type="text" class="form-control" id="price" name="price" disabled>
+                                                            <input type="text" class="form-control" id="price" name="price"
+                                                                disabled>
                                                         </div>
 
                                                         <div class="col-12">
@@ -154,8 +155,8 @@
                                                         </div>
                                                         <div class="col-lg-6">
                                                             <label for="bayar" class="form-label">Bayar</label>
-                                                            <input type="text" class="form-control" id="bayar"
-                                                                name="bayar" oninput="formatBayarInput()">
+                                                            <input type="text" class="form-control" id="bayar" name="bayar"
+                                                                oninput="formatBayarInput()">
                                                         </div>
                                                         <div class="col-lg-6 mt-2">
                                                             <label for="kembalian" class="form-label">Kembalian</label>
@@ -318,6 +319,30 @@
             const price = parseInt(document.getElementById('price').value);
             const diskon = parseInt(document.getElementById('diskon').value) || 0;
             const barcode = document.getElementById('barcode').value;
+            const stock = parseInt(document.getElementById('quantity').getAttribute('data-stock') || '0');
+
+            if (stock === 0) {
+                // Pakai SweetAlert2 (pastikan sudah include SweetAlert2) 
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Stock Product Kosong',
+                    text: 'Mohon Re-Stock Product',
+                    confirmButtonColor: '#3085d6',
+                });
+                return; // batalkan submit
+            }
+
+            if (qty > stock) {
+                // Pakai SweetAlert2 (pastikan sudah include SweetAlert2) 
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Stock Tidak Mencukupi',
+                    text: `Maksimal pembelian adalah ${stock}.`,
+                    confirmButtonColor: '#3085d6',
+                });
+                return; // batalkan submit
+            }
+
             const subtotal = (qty * price) - diskon;
 
             const table = document.getElementById('product-list');
@@ -327,16 +352,16 @@
             row.setAttribute('data-barcode', barcode);
 
             row.innerHTML = `
-                                            <th scope="row">${rowCount}</th>
-                                            <td class="product-name">${name}</td>
-                                            <td class="qty">${qty}</td>
-                                            <td class="price">${price}</td>
-                                            <td class="subtotal">${subtotal}</td>
-                                            <td>
-                                                <button class="btn btn-sm btn-warning me-1" onclick="editProduct(this)"><i class="bi bi-pencil"></i></button>
-                                                <button class="btn btn-sm btn-danger" onclick="deleteProduct(this)"><i class="bi bi-trash"></i></button>
-                                            </td>
-                                        `;
+                                                <th scope="row">${rowCount}</th>
+                                                <td class="product-name">${name}</td>
+                                                <td class="qty">${qty}</td>
+                                                <td class="price">${price}</td>
+                                                <td class="subtotal">${subtotal}</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-warning me-1" onclick="editProduct(this)"><i class="bi bi-pencil"></i></button>
+                                                    <button class="btn btn-sm btn-danger" onclick="deleteProduct(this)"><i class="bi bi-trash"></i></button>
+                                                </td>
+                                            `;
 
             hitungTotal();
 
@@ -410,6 +435,7 @@
                     document.getElementById("barcode").value = item.barcode;
                     document.getElementById("price").value = item.selling_price;
                     document.getElementById("quantity").value = 1;
+                    document.getElementById("quantity").setAttribute('data-stock', item.stock);
                     container.innerHTML = "";
                     container.style.display = "none";
                 });
@@ -513,17 +539,18 @@
                 const row = table.insertRow();
                 row.setAttribute('data-barcode', data.barcode);
                 row.innerHTML = `
-                                                            <th scope="row">${rowCount}</th>
-                                                            <td class="product-name">${data.name}</td>
-                                                            <td class="qty">${qty}</td>
-                                                            <td class="price">${data.selling_price}</td>
-                                                            <td class="subtotal">${subtotal}</td>
-                                                        `;
+                                                                <th scope="row">${rowCount}</th>
+                                                                <td class="product-name">${data.name}</td>
+                                                                <td class="qty">${qty}</td>
+                                                                <td class="price">${data.selling_price}</td>
+                                                                <td class="subtotal">${subtotal}</td>
+                                                            `;
 
                 hitungTotal();
                 document.getElementById("barcode").value = '';
                 document.getElementById("quantity").value = '';
                 document.getElementById("diskon").value = '';
+                document.getElementById("quantity").setAttribute('data-stock', data.stock);
 
             } catch (error) {
                 console.log("Product not found by barcode");

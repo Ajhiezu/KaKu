@@ -38,7 +38,7 @@ Route::post('/transactions', [AdminController::class, 'transaction'])->name('tra
 Route::get('/autocomplete/barcode', function (\Illuminate\Http\Request $request) {
     $results = \App\Models\Product::where('barcode', 'like', '%' . $request->barcode . '%')
         ->limit(10)
-        ->get(['id', 'barcode', 'name', 'selling_price']);
+        ->get(['id', 'barcode', 'name', 'selling_price','stock']);
 
     return response()->json($results);
 });
@@ -47,7 +47,7 @@ Route::get('/autocomplete/barcode', function (\Illuminate\Http\Request $request)
 Route::get('/autocomplete/product', function (\Illuminate\Http\Request $request) {
     $results = \App\Models\Product::where('name', 'like', '%' . $request->name . '%')
         ->limit(10)
-        ->get(['id', 'barcode', 'name', 'selling_price']);
+        ->get(['id', 'barcode', 'name', 'selling_price','stock']);
 
     return response()->json($results);
 });

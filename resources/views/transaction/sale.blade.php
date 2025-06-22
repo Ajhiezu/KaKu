@@ -154,7 +154,7 @@
                                                         </div>
                                                         <div class="col-lg-6">
                                                             <label for="bayar" class="form-label">Bayar</label>
-                                                            <input type="number" class="form-control" id="bayar"
+                                                            <input type="text" class="form-control" id="bayar"
                                                                 name="bayar" oninput="formatBayarInput()">
                                                         </div>
                                                         <div class="col-lg-6 mt-2">

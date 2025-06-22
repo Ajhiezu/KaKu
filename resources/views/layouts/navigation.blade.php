@@ -27,76 +27,66 @@
 
       <li class="nav-item dropdown">
 
+        @php
+      $countNotifs = $lowStockProducts->count();
+    @endphp
+
         <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
           <i class="bi bi-bell"></i>
-          <span class="badge bg-primary badge-number">4</span>
+          @if($countNotifs > 0)
+        <span class="badge bg-primary badge-number">{{ $countNotifs }}</span>
+      @endif
         </a><!-- End Notification Icon -->
 
         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
           <li class="dropdown-header">
-            You have 4 new notifications
-            <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+            @php
+        $countNotifs = $lowStockProducts->count();
+        @endphp
+            You have {{ $countNotifs }} stock notifications
+            <a href="{{ route('products.index') }}"><span class="badge rounded-pill bg-primary p-2 ms-2">View
+                all</span></a>
           </li>
+
           <li>
             <hr class="dropdown-divider">
           </li>
 
+          @forelse ($lowStockProducts as $product)
           <li class="notification-item">
-            <i class="bi bi-exclamation-circle text-warning"></i>
-            <div>
-              <h4>Lorem Ipsum</h4>
-              <p>Quae dolorem earum veritatis oditseno</p>
-              <p>30 min. ago</p>
-            </div>
+          @if ($product->stock == 0)
+        <i class="bi bi-x-circle text-danger"></i>
+        @else
+        <i class="bi bi-exclamation-circle text-warning"></i>
+        @endif
+          <div>
+            <h4>{{ $product->name }}</h4>
+            @if ($product->stock == 0)
+          <p><strong>Stok habis!</strong> Segera restock produk ini.</p>
+        @else
+          <p><strong>Stok tinggal {{ $product->stock }}</strong>. Segera isi ulang.</p>
+        @endif
+            <p>{{ $product->updated_at->diffForHumans() }}</p>
+          </div>
           </li>
-
           <li>
-            <hr class="dropdown-divider">
+          <hr class="dropdown-divider">
           </li>
+      @empty
+        <li class="notification-item">
+        <i class="bi bi-check-circle text-success"></i>
+        <div>
+          <h4>Stok Aman</h4>
+          <p>Tidak ada produk yang perlu restock saat ini.</p>
+        </div>
+        </li>
+      @endforelse
 
-          <li class="notification-item">
-            <i class="bi bi-x-circle text-danger"></i>
-            <div>
-              <h4>Atque rerum nesciunt</h4>
-              <p>Quae dolorem earum veritatis oditseno</p>
-              <p>1 hr. ago</p>
-            </div>
-          </li>
-
-          <li>
-            <hr class="dropdown-divider">
-          </li>
-
-          <li class="notification-item">
-            <i class="bi bi-check-circle text-success"></i>
-            <div>
-              <h4>Sit rerum fuga</h4>
-              <p>Quae dolorem earum veritatis oditseno</p>
-              <p>2 hrs. ago</p>
-            </div>
-          </li>
-
-          <li>
-            <hr class="dropdown-divider">
-          </li>
-
-          <li class="notification-item">
-            <i class="bi bi-info-circle text-primary"></i>
-            <div>
-              <h4>Dicta reprehenderit</h4>
-              <p>Quae dolorem earum veritatis oditseno</p>
-              <p>4 hrs. ago</p>
-            </div>
-          </li>
-
-          <li>
-            <hr class="dropdown-divider">
-          </li>
           <li class="dropdown-footer">
-            <a href="#">Show all notifications</a>
+            <a href="{{ route('products.index') }}">Show all products</a>
           </li>
-
-        </ul><!-- End Notification Dropdown Items -->
+        </ul>
+        <!-- End Notification Dropdown Items -->
 
       </li><!-- End Notification Nav -->
 

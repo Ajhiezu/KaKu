@@ -14,9 +14,12 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with('category')->latest()->paginate(10);
+        $products = Product::with('category')->paginate(10);
 
-        return view('product.product',compact('products'));
+        // Notifikasi untuk stok rendah (<5)
+        $lowStockProducts = Product::where('stock', '<', 5)->get();
+
+        return view('product.product', compact('products', 'lowStockProducts'));
     }
 
     /**
@@ -26,7 +29,7 @@ class ProductController extends Controller
     {
         $categories = Category::all();
 
-        return view('product.form-product',compact('categories'));
+        return view('product.form-product', compact('categories'));
     }
 
     /**
@@ -45,7 +48,7 @@ class ProductController extends Controller
             'category_id' => 'nullable|exists:categories,id',
         ]);
 
-        $path = $request->file('image')->store('products','public');
+        $path = $request->file('image')->store('products', 'public');
 
         Product::create([
             'image' => $path,
@@ -58,7 +61,7 @@ class ProductController extends Controller
             'category_id' => $request->category_id,
         ]);
 
-        return redirect()->route('products.index')->with('success','Product created successfully');
+        return redirect()->route('products.index')->with('success', 'Product created successfully');
     }
 
     /**
@@ -77,7 +80,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         $categories = Category::all();
 
-        return view('product.form-product',compact('product','categories'));
+        return view('product.form-product', compact('product', 'categories'));
     }
 
     /**
@@ -96,9 +99,9 @@ class ProductController extends Controller
             'category_id' => 'nullable|exists:categories,id',
         ]);
 
-        if($request->hasFile('image')){
+        if ($request->hasFile('image')) {
             Storage::disk('public')->delete($product->image);
-            $path = $request->file('image')->store('products','public');
+            $path = $request->file('image')->store('products', 'public');
             $product->image = $path;
         }
 
@@ -111,7 +114,7 @@ class ProductController extends Controller
         $product->category_id = $request->category_id;
         $product->save();
 
-        return redirect()->route('products.index')->with('success','Product updated successfully');
+        return redirect()->route('products.index')->with('success', 'Product updated successfully');
     }
 
     /**
@@ -122,6 +125,6 @@ class ProductController extends Controller
         Storage::disk('public')->delete($product->image);
         $product->delete();
 
-        return redirect()->route('products.index')->with('success','Product deleted successfully');
+        return redirect()->route('products.index')->with('success', 'Product deleted successfully');
     }
 }

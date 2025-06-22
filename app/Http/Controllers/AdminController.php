@@ -10,6 +10,7 @@ use App\Models\TransactionDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -48,7 +49,6 @@ class AdminController extends Controller
 
     public function sales()
     {
-
         return view('transaction.sale');
     }
 
@@ -69,6 +69,13 @@ class AdminController extends Controller
             $bayar = floatval($request->bayar);
             $kembalian = floatval($request->kembalian);
 
+            // Log untuk debugging
+            Log::info('Transaction started', [
+                'total' => $total,
+                'bayar' => $bayar,
+                'products' => $request->products
+            ]);
+
             // Validasi jika bayar kosong
             if ($bayar <= 0) {
                 return back()->withErrors(['bayar' => 'Pembayaran harus diisi terlebih dahulu!'])->withInput();
@@ -86,7 +93,47 @@ class AdminController extends Controller
                 $customerId = $customer->id;
             }
 
-            // Simpan transaksi utama
+            // Decode products dari JSON
+            $products = json_decode($request->products, true);
+            
+            // LANGKAH 1: Validasi semua produk dan stok sebelum menyimpan transaksi
+            $productDetails = [];
+            foreach ($products as $item) {
+                // Cari produk berdasarkan barcode ATAU nama jika barcode kosong
+                $product = null;
+                if (!empty($item['barcode'])) {
+                    $product = Product::where('barcode', $item['barcode'])->first();
+                } else {
+                    // Jika barcode kosong, cari berdasarkan nama
+                    $product = Product::where('name', $item['name'])->first();
+                }
+
+                if (!$product) {
+                    throw new \Exception("Produk '{$item['name']}' tidak ditemukan dalam database.");
+                }
+
+                // Validasi stok
+                $requestedQty = intval($item['quantity']);
+                if ($product->stock < $requestedQty) {
+                    throw new \Exception("Stok produk '{$product->name}' tidak mencukupi. Stok tersedia: {$product->stock}, diminta: {$requestedQty}");
+                }
+
+                // Simpan detail produk untuk diproses nanti
+                $productDetails[] = [
+                    'product' => $product,
+                    'quantity' => $requestedQty,
+                    'price' => floatval($item['price']),
+                    'subtotal' => floatval($item['subtotal'])
+                ];
+
+                Log::info('Product validation passed', [
+                    'product_name' => $product->name,
+                    'current_stock' => $product->stock,
+                    'requested_qty' => $requestedQty
+                ]);
+            }
+
+            // LANGKAH 2: Simpan transaksi utama
             $transaction = Transaction::create([
                 'transaction_date' => $request->datetime,
                 'total_amount'     => $total,
@@ -96,25 +143,57 @@ class AdminController extends Controller
                 'cashier_id'       => Auth::id(),
             ]);
 
-            // Simpan detail produk
-            $products = json_decode($request->products, true);
-            foreach ($products as $item) {
-                $product = Product::firstOrCreate(['name' => $item['name']], [
-                    'price' => $item['price'],
-                    'category_id' => 1,
-                    'stock' => 0
-                ]);
+            Log::info('Transaction created', ['transaction_id' => $transaction->id]);
 
+            // LANGKAH 3: Proses setiap produk - simpan detail dan kurangi stok
+            $lowStockProducts = [];
+            foreach ($productDetails as $detail) {
+                $product = $detail['product'];
+                $quantity = $detail['quantity'];
+                $price = $detail['price'];
+                $subtotal = $detail['subtotal'];
+
+                // Simpan detail transaksi
                 TransactionDetail::create([
                     'transaction_id' => $transaction->id,
                     'product_id'     => $product->id,
-                    'quantity'       => $item['quantity'],
-                    'price'          => $item['price'],
-                    'subtotal'       => $item['subtotal'],
+                    'quantity'       => $quantity,
+                    'price'          => $price,
+                    'subtotal'       => $subtotal,
                 ]);
+
+                // KURANGI STOK - Ini bagian yang penting!
+                $oldStock = $product->stock;
+                $newStock = $oldStock - $quantity;
+                
+                // Update stok menggunakan query builder untuk memastikan berhasil
+                $updated = DB::table('products')
+                    ->where('id', $product->id)
+                    ->update(['stock' => $newStock]);
+
+                if (!$updated) {
+                    throw new \Exception("Gagal mengupdate stok produk '{$product->name}'");
+                }
+
+                Log::info('Stock updated', [
+                    'product_name' => $product->name,
+                    'old_stock' => $oldStock,
+                    'quantity_sold' => $quantity,
+                    'new_stock' => $newStock
+                ]);
+
+                // Cek stok rendah
+                if ($newStock <= 5) {
+                    $lowStockProducts[] = "{$product->name} (sisa {$newStock})";
+                }
             }
 
-            // Simpan ke tabel hutang jika bayar < total
+            // LANGKAH 4: Tampilkan warning jika ada produk dengan stok rendah
+            if (!empty($lowStockProducts)) {
+                session()->flash('warning_stock', 'Beberapa produk perlu restock: <br><ul><li>' . implode('</li><li>', $lowStockProducts) . '</li></ul>');
+            }
+
+            // LANGKAH 5: Simpan ke tabel hutang jika bayar < total
             if ($bayar < $total && $customerId) {
                 Debt::create([
                     'customer_id' => $customerId,
@@ -128,10 +207,13 @@ class AdminController extends Controller
             }
 
             DB::commit();
+            Log::info('Transaction completed successfully');
 
-            return redirect()->route('sales')->with('success', 'Transaksi berhasil disimpan.');
+            return redirect()->route('sales')->with('success', 'Transaksi berhasil disimpan dan stok produk telah dikurangi.');
+            
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Transaction failed', ['error' => $e->getMessage()]);
             return back()->with('error', 'Gagal menyimpan transaksi: ' . $e->getMessage());
         }
     }

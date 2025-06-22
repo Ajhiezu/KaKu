@@ -120,6 +120,24 @@
       </ul>
     </li><!-- End report Nav -->
 
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#debt-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-clipboard"></i><span>Debt</span><i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="debt-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="{{ route('debts.index') }}">
+            <i class="bi bi-circle"></i><span>Debt</span>
+          </a>
+        </li>
+        <li>
+          <a href="{{ route('report.debt') }}">
+            <i class="bi bi-circle"></i><span>Debt Reports</span>
+          </a>
+        </li>
+      </ul>
+    </li><!-- End report Nav -->
+
     <li class="nav-heading">Pages</li>
 
     <li class="nav-item">

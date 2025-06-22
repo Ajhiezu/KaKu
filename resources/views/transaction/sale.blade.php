@@ -106,7 +106,7 @@
 
                                                         <div class="manual-only col-12">
                                                             <label for="price" class="form-label">Price</label>
-                                                            <input type="text" class="form-control" id="price" name="price">
+                                                            <input type="text" class="form-control" id="price" name="price" disabled>
                                                         </div>
 
                                                         <div class="col-12">

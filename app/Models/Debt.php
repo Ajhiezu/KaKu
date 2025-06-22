@@ -10,9 +10,13 @@ class Debt extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'customer_id', 'transaction_id',
-        'total_debt', 'amount_paid',
-        'remaining_debt', 'status', 'due_date'
+        'customer_id',
+        'transaction_id',
+        'total_debt',
+        'amount_paid',
+        'remaining_debt',
+        'status',
+        'due_date'
     ];
 
     public function customer()
@@ -23,5 +27,10 @@ class Debt extends Model
     public function transaction()
     {
         return $this->belongsTo(Transaction::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Debt_Payment::class);
     }
 }

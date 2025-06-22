@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DebtController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -58,3 +59,9 @@ Route::get('/autocomplete/customer', function (\Illuminate\Http\Request $request
 });
 
 Route::post('/debt', [AdminController::class, 'debt'])->name('debts.store');
+
+//debt
+Route::resource('debts',DebtController::class);
+Route::get('/report-debt',[DebtController::class,'report'])->name('report.debt');
+Route::get('debts/{customer_id}/history', [DebtController::class, 'history'])->name('debts.history');
+

@@ -123,7 +123,7 @@ class AdminController extends Controller
                     'amount_paid' => $bayar,
                     'remaining_debt' => $total - $bayar,
                     'status' => $bayar == 0 ? 'unpaid' : 'partial',
-                    'due_date' => now()->addDays(30),
+                    'due_date' => $request->datetime,
                 ]);
             }
 

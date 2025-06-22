@@ -28,3 +28,31 @@ Route::resource('customers',CustomerController::class);
 
 // User
 Route::resource('users',UserController::class);
+
+// Sale
+Route::get('/sale',[AdminController::class,'sales'])->name('sales');
+// routes/web.php
+Route::post('/transactions', [AdminController::class, 'transaction'])->name('transactions.store');
+// Untuk autocomplete by barcode
+Route::get('/autocomplete/barcode', function (\Illuminate\Http\Request $request) {
+    $results = \App\Models\Product::where('barcode', 'like', '%' . $request->barcode . '%')
+        ->limit(10)
+        ->get(['id', 'barcode', 'name', 'selling_price']);
+
+    return response()->json($results);
+});
+
+// Untuk autocomplete by name
+Route::get('/autocomplete/name', function (\Illuminate\Http\Request $request) {
+    $results = \App\Models\Product::where('name', 'like', '%' . $request->name . '%')
+        ->limit(10)
+        ->get(['id', 'barcode', 'name', 'selling_price']);
+
+    return response()->json($results);
+});
+Route::get('/autocomplete/name', function (\Illuminate\Http\Request $request) {
+    $results = \App\Models\Customer::where('name', 'like', '%' . $request->name . '%')
+        ->limit(10)->get();
+
+    return response()->json($results);
+});

@@ -90,7 +90,7 @@
       </a>
       <ul id="transaction-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
         <li>
-          <a href="#">
+          <a href="{{ route('sales') }}">
             <i class="bi bi-circle"></i><span>Sale</span>
           </a>
         </li>

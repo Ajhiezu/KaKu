@@ -14,7 +14,7 @@ class CustomerController extends Controller
     {
         $customers = Customer::latest()->paginate(10);
 
-        return view('customer.customer',compact('customers'));
+        return view('customer.customer', compact('customers'));
     }
 
     /**
@@ -42,7 +42,7 @@ class CustomerController extends Controller
             'address' => $request->address,
         ]);
 
-        return redirect()->route('customers.index')->with('success','Customers addedd successfully');
+        return redirect()->route('customers.index')->with('success', 'Customers addedd successfully');
     }
 
     /**
@@ -58,7 +58,7 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer)
     {
-        return view('customer.form-customer',compact('customer'));
+        return view('customer.form-customer', compact('customer'));
     }
 
     /**
@@ -77,7 +77,7 @@ class CustomerController extends Controller
         $customer->address = $request->address;
         $customer->save();
 
-        return redirect()->route('customers.index')->with('success','Customer updated successfully');
+        return redirect()->route('customers.index')->with('success', 'Customer updated successfully');
     }
 
     /**
@@ -88,6 +88,6 @@ class CustomerController extends Controller
         $customer = Customer::findOrFail($id);
         $customer->delete();
 
-        return redirect()->route('customers.index')->with('success','Customer deleted successfully');
+        return redirect()->route('customers.index')->with('success', 'Customer deleted successfully');
     }
 }

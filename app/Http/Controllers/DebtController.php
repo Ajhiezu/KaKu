@@ -103,42 +103,60 @@ class DebtController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {
-        $request->validate([
-            'payment' => 'required|numeric|min:1',
-        ]);
+{
+    $request->validate([
+        'payment' => 'required|numeric|min:1',
+    ]);
 
-        $debt = \App\Models\Debt::findOrFail($id);
+    $payment = floatval($request->input('payment'));
 
-        $payment = $request->input('payment');
+    // Ambil salah satu utang berdasarkan ID untuk dapatkan customer_id
+    $firstDebt = Debt::findOrFail($id);
+    $customerId = $firstDebt->customer_id;
 
-        if ($payment > $debt->remaining_debt) {
-            return back()->withErrors(['payment' => 'Pembayaran melebihi sisa utang.']);
-        }
+    // Ambil semua utang customer yang belum lunas
+    $debts = Debt::where('customer_id', $customerId)
+        ->where('remaining_debt', '>', 0)
+        ->orderBy('created_at') // lunasi dari utang tertua dulu
+        ->get();
 
-        // Kurangi remaining_debt langsung
-        $debt->remaining_debt -= $payment;
+    if ($debts->isEmpty()) {
+        return back()->withErrors(['payment' => 'Tidak ada utang yang bisa dilunasi.']);
+    }
 
-        // Update status
+    $sisaPembayaran = $payment;
+
+    foreach ($debts as $debt) {
+        if ($sisaPembayaran <= 0) break;
+
+        $bayarSekarang = min($debt->remaining_debt, $sisaPembayaran);
+
+        $debt->amount_paid += $bayarSekarang;
+        $debt->remaining_debt -= $bayarSekarang;
+
+        // Tentukan status
         if ($debt->remaining_debt <= 0) {
             $debt->remaining_debt = 0;
             $debt->status = 'paid';
-        } elseif ($debt->remaining_debt < $debt->total_debt) {
+        } elseif ($debt->amount_paid > 0) {
             $debt->status = 'partial';
-        } else {
-            $debt->status = 'unpaid';
         }
 
         $debt->save();
 
+        // Simpan ke debt_payment
         \App\Models\Debt_Payment::create([
             'debt_id' => $debt->id,
-            'payment_amount' => $payment,
+            'payment_amount' => $bayarSekarang,
             'payment_date' => now(),
         ]);
 
-        return redirect()->route('debts.index')->with('success', 'Payment berhasil disimpan.');
+        $sisaPembayaran -= $bayarSekarang;
     }
+
+    return redirect()->route('debts.index')->with('success', 'Payment berhasil dibagi ke semua utang.');
+}
+
 
 
     /**

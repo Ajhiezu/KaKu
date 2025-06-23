@@ -6,6 +6,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DebtController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -63,5 +64,10 @@ Route::get('debts/{customer_id}/history', [DebtController::class, 'history'])->n
 //report sale
 Route::get('/reports/sales', [AdminController::class, 'report_sales'])->name('sales.report');
 Route::get('/reports/sales/{transaction}', [AdminController::class, 'show_detail_sales'])->name('sales.history');
+
+//profile
+Route::get('/profile', [ProfileController::class,'profile'])->name('profile');
+Route::get('/contact', [ProfileController::class,'contact'])->name('contact');
+Route::get('/faq', [ProfileController::class,'faq'])->name('faq');
 
 

@@ -57,7 +57,7 @@ class AdminController extends Controller
         $request->validate([
             'datetime'     => 'required|date',
             'total'        => 'required|numeric',
-            'bayar'        => 'required|numeric',
+            'bayar'        => 'required|numeric|min:0',
             'kembalian'    => 'required|numeric',
             'products'     => 'required|json',
         ]);
@@ -77,7 +77,7 @@ class AdminController extends Controller
             ]);
 
             // Validasi jika bayar kosong
-            if ($bayar <= 0) {
+            if ($bayar < 0) {
                 return back()->withErrors(['bayar' => 'Pembayaran harus diisi terlebih dahulu!'])->withInput();
             }
 

@@ -620,7 +620,7 @@
             const total = parseFloat(totalStr || 0);
             const bayar = parseFloat(bayarStr || 0);
 
-            if (bayar <= 0) {
+            if (bayar < 0) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Pembayaran kosong!',

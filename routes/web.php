@@ -65,3 +65,8 @@ Route::resource('debts',DebtController::class);
 Route::get('/report-debt',[DebtController::class,'report'])->name('report.debt');
 Route::get('debts/{customer_id}/history', [DebtController::class, 'history'])->name('debts.history');
 
+//report sale
+Route::get('/reports/sales', [AdminController::class, 'report_sales'])->name('sales.report');
+Route::get('/reports/sales/{transaction}', [AdminController::class, 'show_detail_sales'])->name('sales.history');
+
+

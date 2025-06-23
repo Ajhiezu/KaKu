@@ -10,9 +10,18 @@ class Transaction extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'transaction_date', 'total_amount',
-        'payment', 'change', 'customer_id', 'cashier_id'
+        'transaction_date',
+        'total_amount',
+        'payment',
+        'change',
+        'customer_id',
+        'cashier_id'
     ];
+
+    protected $casts = [
+        'transaction_date' => 'datetime',
+    ];
+
 
     public function customer()
     {

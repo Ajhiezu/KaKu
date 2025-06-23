@@ -217,4 +217,19 @@ class AdminController extends Controller
             return back()->with('error', 'Gagal menyimpan transaksi: ' . $e->getMessage());
         }
     }
+
+    public function report_sales()
+    {
+        // Ambil semua transaksi dengan relasi customer dan debt
+        $sales = Transaction::with(['customer', 'debt'])->get();
+
+        return view('report.sale-report', compact('sales'));
+    }
+
+    public function show_detail_sales($transaction_id)
+    {
+        $transaction = Transaction::with(['customer', 'debt', 'details.product'])->findOrFail($transaction_id);
+
+        return view('report.sales-report-detail', compact('transaction'));
+    }
 }

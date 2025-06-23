@@ -108,7 +108,7 @@
       </a>
       <ul id="report-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
         <li>
-          <a href="#">
+          <a href="{{ route('sales.report') }}">
             <i class="bi bi-circle"></i><span>Sales Report</span>
           </a>
         </li>

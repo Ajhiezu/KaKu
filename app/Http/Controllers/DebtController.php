@@ -74,11 +74,28 @@ class DebtController extends Controller
      */
     public function edit($customer_id)
     {
-        $debt = Debt::where('customer_id', $customer_id)
+        $debts = Debt::where('customer_id', $customer_id)
             ->where('status', '!=', 'paid')
-            ->firstOrFail(); // atau get() kalau lebih dari 1
+            ->get();
 
-        return view('debt.form-debt', compact('debt'));
+        if ($debts->isEmpty()) {
+            abort(404, 'Utang tidak ditemukan');
+        }
+
+        // Jumlahkan seluruh sisa utang
+        $remaining_debt = $debts->sum('remaining_debt');
+        $total_debt = $debts->sum('total_debt');
+        $amount_paid = $debts->sum('amount_paid');
+        $debt_id = $debts->first()->id;
+
+        return view('debt.form-debt', [
+            'debt' => (object)[
+                'id' => $debt_id, // pakai id salah satu utangnya
+                'remaining_debt' => $remaining_debt,
+                'total_debt' => $total_debt,
+                'amount_paid' => $amount_paid,
+            ]
+        ]);
     }
 
 

@@ -156,7 +156,7 @@
                                                         <div class="col-lg-6">
                                                             <label for="bayar" class="form-label">Bayar</label>
                                                             <input type="text" class="form-control" id="bayar" name="bayar"
-                                                                oninput="formatBayarInput()">
+                                                                oninput="formatBayarInput()" required>
                                                         </div>
                                                         <div class="col-lg-6 mt-2">
                                                             <label for="kembalian" class="form-label">Kembalian</label>
@@ -174,7 +174,7 @@
                                                         <input type="hidden" name="datetime" id="form-datetime">
                                                         <input type="hidden" name="customer" id="form-customer">
                                                         <input type="hidden" name="total" id="form-total">
-                                                        <input type="hidden" name="bayar" id="form-bayar">
+                                                        <input type="hidden" name="bayar" id="form-bayar" required>
                                                         <input type="hidden" name="kembalian" id="form-kembalian">
                                                         <input type="hidden" name="products" id="form-products">
                                                         <div id="debt-info" style="display: none;"
@@ -620,7 +620,7 @@
             const total = parseFloat(totalStr || 0);
             const bayar = parseFloat(bayarStr || 0);
 
-            if (bayar < 0) {
+            if (bayarStr === '' || isNaN(bayar) || bayar < 0) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Pembayaran kosong!',

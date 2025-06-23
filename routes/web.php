@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DebtController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
@@ -14,9 +15,7 @@ Route::post('/login',[AdminController::class,'login']);
 Route::post('/logout',[AdminController::class,'logout'])->name('logout');
 
 
-Route::get('/',function (){
-    return view('dashboard');
-})->middleware('auth')->name('dashboard');
+Route::get('/', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
 
 // Product
 Route::resource('products',ProductController::class);
@@ -32,9 +31,7 @@ Route::resource('users',UserController::class);
 
 // Sale
 Route::get('/sale',[AdminController::class,'sales'])->name('sales');
-// routes/web.php
 Route::post('/transactions', [AdminController::class, 'transaction'])->name('transactions.store');
-// Untuk autocomplete by barcode
 Route::get('/autocomplete/barcode', function (\Illuminate\Http\Request $request) {
     $results = \App\Models\Product::where('barcode', 'like', '%' . $request->barcode . '%')
         ->limit(10)
@@ -42,8 +39,6 @@ Route::get('/autocomplete/barcode', function (\Illuminate\Http\Request $request)
 
     return response()->json($results);
 });
-
-// Untuk autocomplete by name
 Route::get('/autocomplete/product', function (\Illuminate\Http\Request $request) {
     $results = \App\Models\Product::where('name', 'like', '%' . $request->name . '%')
         ->limit(10)

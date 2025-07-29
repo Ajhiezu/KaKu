@@ -71,32 +71,36 @@
 @endsection
 @push('scripts')
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  {{-- Tampilkan notifikasi sukses jika ada --}}
   @if(session('success'))
     <script>
-    Swal.fire({
-    icon: 'success',
-    title: 'Success!',
-    text: '{{ session('success') }}',
-    showConfirmButton: false,
-    timer: 2000
-    });
-    </script>
-    <script>
-    function deleteCategory(id) {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-      if (result.isConfirmed) {
-      document.getElementById('delete-form-' + id).submit();
-      }
-    })
-    }
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: '{{ session('success') }}',
+        showConfirmButton: false,
+        timer: 2000
+      });
     </script>
   @endif
+
+  {{-- Fungsi deleteCategory tetap tersedia --}}
+  <script>
+    function deleteCategory(id) {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.getElementById('delete-form-' + id).submit();
+        }
+      });
+    }
+  </script>
 @endpush
